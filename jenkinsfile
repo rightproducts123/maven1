@@ -1,0 +1,45 @@
+pipeline
+{
+    agent any
+    stages
+    {
+        stage("CountinuesDownload")
+        {
+            steps
+            {
+                git 'https://github.com/intelliqittrainings/maven.git'
+            }
+        }
+        stage("CountinuesBuild")
+        {
+            steps
+            {
+                sh 'mvn package'
+            }
+        }
+        stage("CountinuesDeployment")
+        {
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: 'de5b75d5-fc2a-422f-93f6-dba63d78763e', path: '', url: 'http://172.31.46.83:8080')], contextPath: 'test1', war: '**/*.war'
+            }
+        }
+        stage("CountinuesTesting")
+        {
+            steps
+            {
+                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+                sh 'java -jar /var/lib/jenkins/workspace/declarative/testing.jar'
+            }
+        }
+        stage("CountinuesDelivery")
+        {
+            steps
+            {
+
+                
+                deploy adapters: [tomcat9(credentialsId: 'de5b75d5-fc2a-422f-93f6-dba63d78763e', path: '', url: 'http://172.31.42.232:8080')], contextPath: 'test1', war: '**/*.war'
+            }
+        }
+    }
+}
